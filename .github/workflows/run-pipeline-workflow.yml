@@ -22,7 +22,7 @@ jobs:
 
       # Start the specific Codespace directly using the known name
       - name: Start Codespace
-        run: gh codespace start --repo aman-rlf/rentlondonflat-pipeline --codespace stunning-winner-jjqrgg97pw4p2q97j
+        run: gh codespace start --codespace stunning-winner-jjqrgg97pw4p2q97j
 
       # Wait for Codespace to be ready
       - name: Wait for Codespace to start
@@ -30,9 +30,4 @@ jobs:
 
       # Execute the pipeline script inside the Codespace
       - name: Execute Pipeline Script
-        run: gh codespace ssh --command "python3 /workspaces/rentlondonflat-pipeline/sql_database_pipeline.py" --codespace stunning-winner-jjqrgg97pw4p2q97j
-
-      # Stop the Codespace after running the script
-      - name: Stop Codespace
-        if: always()
-        run: gh codespace stop --repo aman-rlf/rentlondonflat-pipeline --codespace stunning-winner-jjqrgg97pw4p2q97j
+       
