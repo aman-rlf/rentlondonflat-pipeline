@@ -20,11 +20,11 @@ jobs:
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
 
-      # List Codespaces to get the specific one
+      # List Codespaces to get the specific one (include repo flag for specificity)
       - name: Get Codespace ID
         id: get-codespace
         run: |
-          CODESPACE_ID=$(gh codespace list --json name,id,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .id')
+          CODESPACE_ID=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,id,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .id')
           if [ -z "$CODESPACE_ID" ]; then
             echo "Error: Codespace not found!" && exit 1
           fi
@@ -34,11 +34,11 @@ jobs:
       # Start the specific Codespace
       - name: Start Codespace
         if: always()
-        run: gh codespace start --codespace "$(cat codespace_id.txt)"
+        run: gh codespace start --repo aman-rlf/rentlondonflat-pipeline --codespace "$(cat codespace_id.txt)"
 
       # Wait for Codespace to be ready
       - name: Wait for Codespace to start
-        run: sleep 45
+        run: sleep 10
 
       # Execute the pipeline script inside the Codespace
       - name: Execute Pipeline Script
@@ -47,4 +47,4 @@ jobs:
       # Stop the Codespace after running the script
       - name: Stop Codespace
         if: always()
-        run: gh codespace stop --codespace "$(cat codespace_id.txt)"
+        run: gh codespace stop --repo aman-rlf/rentlondonflat-pipeline --codespace "$(cat codespace_id.txt)"
