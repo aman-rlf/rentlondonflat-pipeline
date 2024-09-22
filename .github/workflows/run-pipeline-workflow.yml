@@ -1,0 +1,49 @@
+name: Codespace Execution Every 6 Hours
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Runs every 6 hours
+  workflow_dispatch:  # Allows you to manually trigger the workflow
+
+jobs:
+  start-codespace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install GitHub CLI
+        run: |
+          if ! gh --version; then
+            sudo apt-get update && sudo apt-get install gh -y
+          fi
+
+      # Authenticate using the Personal Access Token stored as a secret
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
+
+      # List Codespaces to get the specific one (with repo name)
+      - name: Get Codespace ID
+        id: get-codespace
+        run: |
+          CODESPACE_ID=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,id,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .id')
+          if [ -z "$CODESPACE_ID" ]; then
+            echo "Error: Codespace not found!" && exit 1
+          fi
+          echo $CODESPACE_ID > codespace_id.txt
+          cat codespace_id.txt
+
+      # Start the specific Codespace
+      - name: Start Codespace
+        if: always()
+        run: gh codespace start --repo aman-rlf/rentlondonflat-pipeline --codespace "$(cat codespace_id.txt)"
+
+      # Wait for Codespace to be ready
+      - name: Wait for Codespace to start
+        run: sleep 10
+
+      # Execute the pipeline script inside the Codespace
+      - name: Execute Pipeline Script
+        run: gh codespace ssh --command "python3 /workspaces/rentlondonflat-pipeline/sql_database_pipeline.py" --codespace "$(cat codespace_id.txt)"
+
+      # Stop the Codespace after running the script
+      - name: Stop Codespace
+        if: always()
+        run: gh codespace stop --repo aman-rlf/rentlondonflat-pipeline --codespace "$(cat codespace_id.txt)"
