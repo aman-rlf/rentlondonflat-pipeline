@@ -1,0 +1,11 @@
+
+
+[runtime]
+dlthub_telemetry = true
+
+
+# only for the extract stage - for all sources
+[sources.data_writer]
+file_max_items=100000
+file_max_bytes=1000000
+
