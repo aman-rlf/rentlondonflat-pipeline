@@ -9,31 +9,21 @@ jobs:
   start-codespace:
     runs-on: ubuntu-latest
     steps:
-      # Install GitHub CLI using the official repository for the latest version
-      - name: Install GitHub CLI
-        run: |
-          # Install curl if not present
-          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-          
-          # Add GitHub CLI GPG key and repository
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          
-          # Update and install gh
-          sudo apt update
-          sudo apt install gh -y
+      # 1. Setup GitHub CLI to the latest version
+      - name: Setup GitHub CLI
+        uses: cli/setup-gh@v2
+        with:
+          version: latest
 
-      # Authenticate using the Personal Access Token stored as a secret
+      # 2. Authenticate GitHub CLI non-interactively using the PAT
       - name: Authenticate GitHub CLI
-        run: |
-          gh auth login --hostname github.com --git-protocol https --token "${{ secrets.CODESPACES_TOKEN }}"
+        run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
 
-      # Verify Authentication
+      # 3. Verify Authentication
       - name: Verify GitHub CLI Authentication
         run: gh auth status
 
-      # Start the specific Codespace using the correct flags and machine type
+      # 4. Start the specific Codespace using the correct flags and machine type
       - name: Start Codespace
         run: |
           gh codespace create \
@@ -42,17 +32,17 @@ jobs:
             --branch main \
             --machine "standardLinux32gb"
 
-      # Wait for Codespace to be ready
+      # 5. Wait for Codespace to be ready
       - name: Wait for Codespace to Start
-        run: sleep 10
+        run: sleep 10  # Replace with a robust wait mechanism if needed
 
-      # Retrieve the Codespace Name (Ensures the Codespace is correctly identified)
+      # 6. Retrieve the Codespace Name
       - name: Get Codespace Name
         run: |
-          CODESPACE_NAME=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q '.[] | select(.displayName == "stunning-winner-jjqrgg97pw4p2q97j") | .name')
+          CODESPACE_NAME=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,displayName,state -q '.[] | select(.displayName == "stunning-winner-jjqrgg97pw4p2q97j") | .name')
           echo "CODESPACE_NAME=${CODESPACE_NAME}" >> $GITHUB_ENV
 
-      # Execute the pipeline script inside the Codespace
+      # 7. Execute the pipeline script inside the Codespace
       - name: Execute Pipeline Script
         run: |
           gh codespace ssh --codespace "${CODESPACE_NAME}" --command "bash /path/to/your/pipeline-script.sh"
