@@ -8,37 +8,42 @@ on:
 jobs:
   start-codespace:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.CODESPACES_TOKEN }}  # Set GH_TOKEN environment variable
     steps:
       # Install GitHub CLI using the official repository for the latest version
       - name: Install GitHub CLI
         run: |
+          # Install curl if not present
           type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          
+          # Add GitHub CLI GPG key and repository
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
           sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          
+          # Update and install gh
           sudo apt update
           sudo apt install gh -y
 
-      # Authenticate using the Personal Access Token stored as a secret
-      - name: Authenticate GitHub CLI
-        env:
-          CODESPACES_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
-        run: echo "$CODESPACES_TOKEN" | gh auth login --with-token
+      # Verify Authentication
+      - name: Verify GitHub CLI Authentication
+        run: gh auth status
 
-      # Start the specific Codespace using the correct flag
+      # Start the specific Codespace using the correct flags and machine type
       - name: Start Codespace
         run: |
           gh codespace create \
             --repo aman-rlf/rentlondonflat-pipeline \
             --display-name stunning-winner-jjqrgg97pw4p2q97j \
             --branch main \
-            --machine "standardLinux"
+            --machine "standardLinux32gb"
 
-      # Wait for Codespace to be ready (optional: implement a more robust wait)
-      - name: Wait for Codespace to start
+      # Wait for Codespace to be ready
+      - name: Wait for Codespace to Start
         run: sleep 10
 
-      # Get Codespace Name (Already known, but ensures correct retrieval)
+      # Retrieve the Codespace Name (Ensures the Codespace is correctly identified)
       - name: Get Codespace Name
         run: |
           CODESPACE_NAME=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .name')
