@@ -21,16 +21,22 @@ jobs:
 
       # Authenticate using the Personal Access Token stored as a secret
       - name: Authenticate GitHub CLI
-        run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
+        env:
+          CODESPACES_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
+        run: echo "$CODESPACES_TOKEN" | gh auth login --with-token
 
-      # Start the specific Codespace (Option 1: Create or Reuse)
+      # Start the specific Codespace using the correct flag
       - name: Start Codespace
         run: |
-          gh codespace create --repo aman-rlf/rentlondonflat-pipeline --name stunning-winner-jjqrgg97pw4p2q97j --branch main --machine "standardLinux"
+          gh codespace create \
+            --repo aman-rlf/rentlondonflat-pipeline \
+            --display-name stunning-winner-jjqrgg97pw4p2q97j \
+            --branch main \
+            --machine "standardLinux"
 
       # Wait for Codespace to be ready (optional: implement a more robust wait)
       - name: Wait for Codespace to start
-        run: sleep 25
+        run: sleep 10
 
       # Get Codespace Name (Already known, but ensures correct retrieval)
       - name: Get Codespace Name
@@ -38,7 +44,7 @@ jobs:
           CODESPACE_NAME=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .name')
           echo "CODESPACE_NAME=${CODESPACE_NAME}" >> $GITHUB_ENV
 
-      # Execute the pipeline script inside the Codespace (Option 2: SSH)
+      # Execute the pipeline script inside the Codespace
       - name: Execute Pipeline Script
         run: |
           gh codespace ssh --codespace "${CODESPACE_NAME}" --command "bash /path/to/your/pipeline-script.sh"
