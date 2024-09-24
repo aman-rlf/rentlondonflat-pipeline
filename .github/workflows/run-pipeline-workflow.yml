@@ -9,13 +9,17 @@ jobs:
   start-codespace:
     runs-on: ubuntu-latest
     steps:
-      # 1. Setup GitHub CLI using the official action
-      - name: Setup GitHub CLI
-        uses: cli/setup-gh@v2
-        with:
-          version: latest  # Ensures the latest version is installed
+      # 1. Install GitHub CLI
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
 
-      # 2. Authenticate GitHub CLI non-interactively using the PAT
+      # 2. Authenticate GitHub CLI using PAT
       - name: Authenticate GitHub CLI
         env:
           CODESPACES_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
@@ -34,9 +38,9 @@ jobs:
             --branch main \
             --machine "standardLinux32gb"
 
-      # 5. Wait for Codespace to be ready (implement a robust wait if necessary)
+      # 5. Wait for Codespace to be ready
       - name: Wait for Codespace to Start
-        run: sleep 10  # Optional: Replace with a loop checking Codespace status
+        run: sleep 10  # Optional: Implement a more robust wait as needed
 
       # 6. Retrieve the Codespace Name
       - name: Get Codespace Name
