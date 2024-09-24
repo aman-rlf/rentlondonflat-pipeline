@@ -9,12 +9,15 @@ jobs:
   start-codespace:
     runs-on: ubuntu-latest
     steps:
-      # Install GitHub CLI (if not already installed)
+      # Install GitHub CLI using the official repository for the latest version
       - name: Install GitHub CLI
         run: |
-          if ! gh --version; then
-            sudo apt-get update && sudo apt-get install gh -y
-          fi
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
 
       # Authenticate using the Personal Access Token stored as a secret
       - name: Authenticate GitHub CLI
@@ -28,6 +31,14 @@ jobs:
       - name: Wait for Codespace to start
         run: sleep 10
 
+      # Get Codespace ID (using name if ID is unavailable)
+      - name: Get Codespace ID
+        run: |
+          CODESPACE_NAME="stunning-winner-jjqrgg97pw4p2q97j"
+          CODESPACE_ID=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q ".[] | select(.name == \"${CODESPACE_NAME}\") | .name")
+          echo "CODESPACE_ID=${CODESPACE_ID}" >> $GITHUB_ENV
+
       # Execute the pipeline script inside the Codespace
       - name: Execute Pipeline Script
-       
+        run: |
+          gh codespace ssh --codespace "${CODESPACE_ID}" --command "bash /path/to/your/pipeline-script.sh"
