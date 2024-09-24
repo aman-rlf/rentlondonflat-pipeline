@@ -9,21 +9,23 @@ jobs:
   start-codespace:
     runs-on: ubuntu-latest
     steps:
-      # 1. Setup GitHub CLI to the latest version
+      # 1. Setup GitHub CLI using the official action
       - name: Setup GitHub CLI
         uses: cli/setup-gh@v2
         with:
-          version: latest
+          version: latest  # Ensures the latest version is installed
 
       # 2. Authenticate GitHub CLI non-interactively using the PAT
       - name: Authenticate GitHub CLI
-        run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
+        env:
+          CODESPACES_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
+        run: echo "$CODESPACES_TOKEN" | gh auth login --with-token
 
       # 3. Verify Authentication
       - name: Verify GitHub CLI Authentication
         run: gh auth status
 
-      # 4. Start the specific Codespace using the correct flags and machine type
+      # 4. Start the specific Codespace using correct flags and machine type
       - name: Start Codespace
         run: |
           gh codespace create \
@@ -32,9 +34,9 @@ jobs:
             --branch main \
             --machine "standardLinux32gb"
 
-      # 5. Wait for Codespace to be ready
+      # 5. Wait for Codespace to be ready (implement a robust wait if necessary)
       - name: Wait for Codespace to Start
-        run: sleep 10  # Replace with a robust wait mechanism if needed
+        run: sleep 10  # Optional: Replace with a loop checking Codespace status
 
       # 6. Retrieve the Codespace Name
       - name: Get Codespace Name
