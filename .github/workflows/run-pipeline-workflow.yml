@@ -3,7 +3,7 @@ name: Codespace Execution Every 6 Hours
 on:
   schedule:
     - cron: "0 */6 * * *"  # Runs every 6 hours
-  workflow_dispatch:  # Allows you to manually trigger the workflow
+  workflow_dispatch:       # Allows manual triggering
 
 jobs:
   start-codespace:
@@ -23,22 +23,22 @@ jobs:
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.CODESPACES_TOKEN }}" | gh auth login --with-token
 
-      # Start the specific Codespace directly using the known name
+      # Start the specific Codespace (Option 1: Create or Reuse)
       - name: Start Codespace
-        run: gh codespace start --codespace stunning-winner-jjqrgg97pw4p2q97j
-
-      # Wait for Codespace to be ready
-      - name: Wait for Codespace to start
-        run: sleep 10
-
-      # Get Codespace ID (using name if ID is unavailable)
-      - name: Get Codespace ID
         run: |
-          CODESPACE_NAME="stunning-winner-jjqrgg97pw4p2q97j"
-          CODESPACE_ID=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q ".[] | select(.name == \"${CODESPACE_NAME}\") | .name")
-          echo "CODESPACE_ID=${CODESPACE_ID}" >> $GITHUB_ENV
+          gh codespace create --repo aman-rlf/rentlondonflat-pipeline --name stunning-winner-jjqrgg97pw4p2q97j --branch main --machine "standardLinux"
 
-      # Execute the pipeline script inside the Codespace
+      # Wait for Codespace to be ready (optional: implement a more robust wait)
+      - name: Wait for Codespace to start
+        run: sleep 25
+
+      # Get Codespace Name (Already known, but ensures correct retrieval)
+      - name: Get Codespace Name
+        run: |
+          CODESPACE_NAME=$(gh codespace list --repo aman-rlf/rentlondonflat-pipeline --json name,state -q '.[] | select(.name == "stunning-winner-jjqrgg97pw4p2q97j") | .name')
+          echo "CODESPACE_NAME=${CODESPACE_NAME}" >> $GITHUB_ENV
+
+      # Execute the pipeline script inside the Codespace (Option 2: SSH)
       - name: Execute Pipeline Script
         run: |
-          gh codespace ssh --codespace "${CODESPACE_ID}" --command "bash /path/to/your/pipeline-script.sh"
+          gh codespace ssh --codespace "${CODESPACE_NAME}" --command "bash /path/to/your/pipeline-script.sh"
