@@ -1,1 +1,1 @@
-dlt[duckdb]>=1.0.0
+dlt[bigquery]>=1.0.0
