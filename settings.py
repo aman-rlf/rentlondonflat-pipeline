@@ -33,5 +33,6 @@ resource_list_1 = [
     "Task",
     "Tenancies",
     "Term",
-    "Type"
+    "Type",
+    "Service"
 ]
