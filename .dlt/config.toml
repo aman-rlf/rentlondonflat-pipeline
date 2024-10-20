@@ -9,3 +9,5 @@ dlthub_telemetry = true
 file_max_items=100000
 file_max_bytes=1000000
 
+[schema]
+naming="direct"

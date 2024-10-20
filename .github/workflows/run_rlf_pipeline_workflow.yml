@@ -1,7 +1,7 @@
 name: Run rlf_pipeline pipeline from sql_database_pipeline.py
 'on':
   schedule:
-  - cron: 0 */6 * * *
+  - cron: 0 5 * * *
   workflow_dispatch: null
 env:
   DESTINATION__BIGQUERY__LOCATION: europe-west2
