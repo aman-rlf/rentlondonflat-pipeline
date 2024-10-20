@@ -65,7 +65,7 @@ def load_entire_database() -> None:
 
     # By default the sql_database source reflects all tables in the schema
     # The database credentials are sourced from the `.dlt/secrets.toml` configuration
-    source = sql_database(backend="pyarrow", chunk_size=100000).parallelize().with_resources(*resource_list_1)
+    source = sql_database(backend="pyarrow", chunk_size=100000, naming="direct").parallelize().with_resources(*resource_list_1)
 
     # Run the pipeline. For a large db this may take a while
     info = pipeline.run(source, write_disposition="replace")
