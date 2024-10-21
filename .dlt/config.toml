@@ -8,3 +8,4 @@ dlthub_telemetry = true
 [sources.data_writer]
 file_max_items=100000
 file_max_bytes=1000000
+
