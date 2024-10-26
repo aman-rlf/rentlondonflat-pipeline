@@ -23,7 +23,7 @@ def load_entire_database() -> None:
     # Get current date as a string
     current_date = datetime.now().strftime("%Y_%m_%d")
     
-    pipeline = dlt.pipeline(pipeline_name="rlf_pipeline", 
+    pipeline = dlt.pipeline(pipeline_name="rlf_pipeline_backup_weekly", 
                             destination='bigquery', 
                             # Append current date to dataset name
                             dataset_name=f"rlf_data_tables_{current_date}", 

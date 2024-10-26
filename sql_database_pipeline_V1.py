@@ -34,5 +34,6 @@ def load_entire_database() -> None:
     info = pipeline.run(source, write_disposition="replace")
     print(info)
 
+
 if __name__ == "__main__":
     load_entire_database()

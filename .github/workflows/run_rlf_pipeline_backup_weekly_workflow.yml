@@ -1,7 +1,7 @@
-name: Run rlf_pipeline pipeline from sql_database_pipeline_V1.py
+name: Run rlf_pipeline_backup_weekly pipeline from sql_database_pipeline_backup.py
 'on':
   schedule:
-  - cron: 0 6 * * *
+  - cron: 0 11 * * 0
   workflow_dispatch: null
 env:
   DESTINATION__BIGQUERY__LOCATION: europe-west2
@@ -47,4 +47,4 @@ jobs:
     - run: pip install -r requirements_github_action.txt
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
     - name: Run pipeline script
-      run: python 'sql_database_pipeline_V1.py'
+      run: python 'sql_database_pipeline_backup.py'

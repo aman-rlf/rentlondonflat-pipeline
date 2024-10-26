@@ -1,6 +1,8 @@
 # please provide valid dependencies including dlt package
 sqlalchemy
 dlt[bigquery]==1.2.0
+connectorx
 pyarrow
 psycopg2-binary
+pandas
 pymysql
