@@ -1,10 +1,11 @@
-name: Run rlf_pipeline pipeline from sql_database_pipeline.py
+name: Run rlf_pipeline pipeline from sql_database_pipeline_backup.py
 'on':
   schedule:
-  - cron: 0 5 * * *
+  - cron: 0 9 * * 0
   workflow_dispatch: null
 env:
   DESTINATION__BIGQUERY__LOCATION: europe-west2
+  SCHEMA__NAMING: direct
   SOURCES__SQL_DATABASE__CREDENTIALS__DRIVERNAME: mysql+pymysql
   SOURCES__SQL_DATABASE__CREDENTIALS__DATABASE: appsheet_dev
   SOURCES__SQL_DATABASE__CREDENTIALS__USERNAME: appsheet
@@ -46,4 +47,4 @@ jobs:
     - run: pip install -r requirements_github_action.txt
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
     - name: Run pipeline script
-      run: python 'sql_database_pipeline.py'
+      run: python 'sql_database_pipeline_backup.py'
