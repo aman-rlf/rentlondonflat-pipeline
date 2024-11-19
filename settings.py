@@ -35,5 +35,11 @@ resource_list_1 = [
     "Term",
     "Type",
     "Service",
-    "Tenancies_Contact"
+    "Tenancies_Contact",
+    "WOW_Address_vacant",
+    "WOW_Arrears",
+    "WOW_Fresh_Enquiries",
+    "WOW_Services",
+    "WOW_Tenancies",
+    "WOW_Moved_Outs",
 ]
