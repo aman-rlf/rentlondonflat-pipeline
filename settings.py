@@ -42,4 +42,6 @@ resource_list_1 = [
     "WOW_Services",
     "WOW_Tenancies",
     "WOW_Moved_Outs",
+    "WOW_Address_Status",
+    "WOW_Listings_PortalName",
 ]
