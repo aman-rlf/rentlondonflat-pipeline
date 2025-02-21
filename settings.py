@@ -38,6 +38,7 @@ resource_list_1 = [
     "Tenancies_Contact",
     "WOW_Address_vacant",
     "WOW_Arrears",
+    "WOW_Deposits",
     "WOW_Fresh_Enquiries",
     "WOW_Services",
     "WOW_Tenancies",
